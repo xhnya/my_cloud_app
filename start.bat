@@ -1,0 +1,1 @@
+D:\IDE\AndroidSdk\emulator\emulator -avd Medium_Phone_API_35
