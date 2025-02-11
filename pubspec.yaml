@@ -37,6 +37,7 @@ dependencies:
   shared_preferences:
   dio:
   fluttertoast: ^8.0.9
+  email_validator: ^3.0.0
 
 dev_dependencies:
   flutter_test:

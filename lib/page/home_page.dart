@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:my_cloud_app/component/BottomNavBar.dart';
+import 'package:my_cloud_app/page/profile_page.dart';
+
+import 'files_page.dart';
+import 'home_page_content.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,9 +16,9 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   static const List<Widget> _pages = <Widget>[
-    Text('Home Page'),  // 首页内容
-    Text('Files Page'), // 文件页面
-    Text('Profile Page'), // 个人页面
+    HomePageContent(),  // 首页内容
+    FilesPage(),        // 文件页面
+    ProfilePage(),      // 个人页面
   ];
 
   void _onItemTapped(int index) {
@@ -31,24 +36,11 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: _pages.elementAt(_selectedIndex),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.folder),
-            label: 'Files',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Profile',
-          ),
-        ],
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
 }
+

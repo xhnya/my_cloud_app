@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_cloud_app/api/UserApi.dart';
+import 'package:my_cloud_app/page/register_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_cloud_app/request/api_service.dart';
+import 'package:my_cloud_app/utils/StorageUtil.dart';
 import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -47,12 +49,17 @@ class _LoginPageState extends State<LoginPage> {
           return;
         }
 
-        final token = data['token'];
+        final token = data['data'];
 
         if (token != null) {
+          // 保存 token 和登录状态
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('loggedIn', true);
           await prefs.setString('token', token);
+
+          // 更新 StorageUtil
+          await StorageUtil.saveToken(token);
+          await StorageUtil.saveLoggedInStatus(true);
 
           // 登录成功，跳转到首页
           Navigator.pushReplacement(
@@ -152,7 +159,10 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(height: 20),
             TextButton(
               onPressed: () {
-                // 注册页面跳转逻辑可以在这里添加
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RegisterPage()),
+                );
               },
               child: Text(
                 '没有账号？去注册',
