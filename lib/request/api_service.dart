@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:my_cloud_app/constant/ApiConstant.dart';
+import 'package:my_cloud_app/utils/ApiResponse.dart';
 
 import 'package:my_cloud_app/utils/StorageUtil.dart';
 
@@ -35,10 +36,11 @@ class ApiService {
 
 
   /// 封装 POST 请求
-  static Future<Response> post(String path, {Map<String, dynamic>? data}) async {
+  static Future<ApiResponse> post(String path, {Map<String, dynamic>? data}) async {
     try {
       final response = await _dio.post(path, data: data);
-      return response;
+
+      return  ApiResponse.fromJson( response.data);
     } catch (e) {
       rethrow;
     }

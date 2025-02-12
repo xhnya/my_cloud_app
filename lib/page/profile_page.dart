@@ -21,7 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final response = await UserApi.getUserInfo();
       setState(() {
-        _userInfo = 'User: ${response['userName']}';
+        _userInfo = 'User: ${response.data['userName']}';
       });
     } catch (e) {
       setState(() {
