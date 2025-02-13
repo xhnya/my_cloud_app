@@ -30,12 +30,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('MyCloud'),
-      ),
-      body: Center(
+      appBar: null,
+      body: SafeArea(child: Center(
         child: _pages.elementAt(_selectedIndex),
-      ),
+      )),
       bottomNavigationBar: BottomNavBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
