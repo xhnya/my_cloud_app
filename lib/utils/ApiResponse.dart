@@ -2,7 +2,7 @@ class ApiResponse {
   final String timestamp;
   final int code;
   final String message;
-  final Map data;
+  var data;
   final Pagination? pagination;
 
   ApiResponse({

@@ -1,9 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+import 'package:my_cloud_app/api/FileApi.dart';
 
-class FilesPage extends StatelessWidget {
+class FilesPage extends StatefulWidget {
   const FilesPage({super.key});
 
+  @override
+  _FilesPageState createState() => _FilesPageState();
+}
+
+class _FilesPageState extends State<FilesPage> {
+
+  List<Map> _userDir = [];
+
+  int _currentId = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserDir(0);
+  }
+
+  _fetchUserDir(int parentId) async {
+    try{
+      final response = FileApi.getUserMenuApi(parentId);
+      setState(() {
+
+      });
+    }catch(e){
+      //提示，获取目录失败
+
+    }
+  }
+
+
+  // 页面初始化之后获取数据
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,7 +115,7 @@ class FilesPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Spacer(), // 占据中间的空白空间
+                    const Spacer(), // 占据中间的空白空间
 
                     // 筛选图标
                     IconButton(
@@ -127,6 +159,141 @@ class FilesPage extends StatelessWidget {
             child: FloatingActionButton(
               onPressed: () {
                 // 实现上传文件功能
+                //弹出上传文件抽屉，选择类型
+                showModalBottomSheet(
+                  context: context,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                  ),
+                  elevation: 10,
+                  isDismissible: true,  // 点击外部区域关闭弹窗
+                  enableDrag: true,     // 启用拖动关闭
+                  builder: (context) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                        ),
+                        color: Colors.white,
+                      ),
+                      height: 200,  // 设置弹窗高度
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // 设置弹窗的标题
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              '上传到云盘',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          // 选择文件、图片和视频、新建文件夹按钮
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              // 选择文件按钮
+                              GestureDetector(
+                                onTap: () {
+                                  // 实现选择文件功能
+                                  print("选择文件");
+                                },
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.upload_file, color: Colors.blue, size: 40),
+                                    SizedBox(height: 8),
+                                    Text('选择文件', style: TextStyle(color: Colors.blue)),
+                                  ],
+                                ),
+                              ),
+                              // 选择图片和视频按钮
+                              GestureDetector(
+                                onTap: () {
+                                  // 实现选择图片或视频功能
+                                  print("选择图片/视频");
+                                },
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.image, color: Colors.green, size: 40),
+                                    SizedBox(height: 8),
+                                    Text('图片/视频', style: TextStyle(color: Colors.green)),
+                                  ],
+                                ),
+                              ),
+                              // 新建文件夹按钮
+                              GestureDetector(
+                                onTap: () {
+                                  // 实现新建文件夹功能
+                                  //_currentId
+                                  //弹出对话框 ，标题就是新建文件夹，然后输入文件夹名称，然后把抽屉关闭，键盘自动弹出，焦点在输入框
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      TextEditingController _folderNameController = TextEditingController();
+                                      return AlertDialog(
+                                        title: Text('新建文件夹'),
+                                        content: TextField(
+                                          controller: _folderNameController,
+                                          autofocus: true,
+                                          decoration: InputDecoration(hintText: '请输入文件夹名称'),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              // 关闭对话框
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('取消'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              // 实现新建文件夹功能
+                                              String folderName = _folderNameController.text;
+                                              if (folderName.isNotEmpty) {
+                                                // 调用API创建文件夹
+                                                final response=await FileApi.createFolderApi(folderName, _currentId);
+                                                // 关闭对话框
+                                                Get.back();
+                                              } else {
+                                                // 提示用户输入文件夹名称
+                                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('请输入文件夹名称')));
+                                              }
+                                            },
+                                            child: Text('确定'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.folder, color: Colors.purple, size: 40),
+                                    SizedBox(height: 8),
+                                    Text('新建文件夹', style: TextStyle(color: Colors.purple)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 16),
+                          // 分隔线
+                          Divider(),
+                        ],
+                      ),
+                    );
+                  },
+                );
               },
               child: const Icon(Icons.add),
             ),
