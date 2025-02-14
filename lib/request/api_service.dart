@@ -47,10 +47,10 @@ class ApiService {
   }
 
   /// 封装 GET 请求
-  static Future<Response> get(String path, {Map<String, dynamic>? params}) async {
+  static Future<ApiResponse> get(String path, {Map<String, dynamic>? params}) async {
     try {
       final response = await _dio.get(path, queryParameters: params);
-      return response;
+      return ApiResponse.fromJson( response.data);
     } catch (e) {
       rethrow;
     }
