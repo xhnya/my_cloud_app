@@ -15,11 +15,12 @@ class _FilesPageState extends State<FilesPage> {
 
   bool get isAnySelected => _userDir.any((e) => e['isSelected'] ?? false);
 
-  int _currentId = 0;
+  Map<String,dynamic> _userData = {};
 
   @override
   void initState() {
     super.initState();
+    _userData['parentId'] = 0;
     _fetchUserDir(0);
   }
 
@@ -41,11 +42,30 @@ class _FilesPageState extends State<FilesPage> {
   // 页面初始化之后获取数据
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    var height = size.height;
     return Scaffold(
         appBar: AppBar(
-          title: const Text('分类'),
+          title: _userData['parentId'] == 0
+              ? const Text('分类')
+              : GestureDetector(
+            onTap: () {
+              // 这里可以执行点击后的逻辑
+              // 比如返回上一层
+              setState(() {
+                _userData['id'] = _userData['parentId'];
+
+                _fetchUserDir(_userData['parentId']);
+              });
+            },
+            child: Row(
+              children: [
+                const Icon(Icons.arrow_back), // 显示左箭头图标
+                Text(_userData['name'] ?? '文件夹'), // 显示名称，避免为空
+              ],
+            ),
+          ),
           actions: [
-            // 点击搜索图标时，弹出搜索框
             IconButton(
               icon: SvgPicture.asset(
                 'assets/icons/folder_transmission.svg',
@@ -63,8 +83,8 @@ class _FilesPageState extends State<FilesPage> {
             Column(
               children: [
                 // 搜索框
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
+                Container(
+                  margin: const EdgeInsets.all(10.0),
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: '支持文档全文、图中文字搜索啦',
@@ -80,11 +100,11 @@ class _FilesPageState extends State<FilesPage> {
                 ),
 
                 // 智能排序按钮和筛选图标、视图样式图标在同一行
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Row(
                     children: [
-                      // 智能排序按钮，点���后显示下拉菜单
+                      // 智能排序按钮，点击后显示下拉菜单
                       PopupMenuButton<String>(
                         onSelected: (value) {
                           // 根据选项做排序功能
@@ -139,19 +159,34 @@ class _FilesPageState extends State<FilesPage> {
                     ],
                   ),
                 ),
+
                 // 文件列表
                 Expanded(
                   child: ListView.builder(
                     itemCount: _userDir.length,
                     itemBuilder: (BuildContext context, int index) {
                       var e = _userDir[index];
-                      return Padding(
-                        padding: const EdgeInsets.all(10.0),
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 5.0),
+                        // 控制项之间的间距
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
-                              child: FolderTile(e['name'], e['updateTime']),
+                              child: FolderTile(e['name'], e['updateTime'],
+                                  onTap: () {
+                                // 点击文件夹时，进入文件夹
+                                    if (e['type'] == 'directory') {
+                                      setState(() {
+                                        _userData['parentId']=e['parentId'];
+                                        _userData['id'] = e['id'];
+                                        _userData['name'] = e['name'];
+                                        _fetchUserDir(e['id']);
+                                      });
+
+                                    }
+                                    print(e);
+                                  }),
                             ),
                             GestureDetector(
                               onTap: () {
@@ -192,34 +227,119 @@ class _FilesPageState extends State<FilesPage> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.all(10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                        offset: Offset(0, -2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.download),
-                        onPressed: () {
-                          // 下载操作
-                        },
+                      // 第一行的图标和文字
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.download, color: Colors.black),
+                                onPressed: () {
+                                  // 下载操作
+                                },
+                              ),
+                              Text('下载',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 12)),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.share, color: Colors.black),
+                                onPressed: () {
+                                  // 分享操作
+                                },
+                              ),
+                              Text('分享',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 12)),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.delete, color: Colors.black),
+                                onPressed: () {
+                                  // 删除操作
+                                },
+                              ),
+                              Text('删除',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 12)),
+                            ],
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        icon: Icon(Icons.share),
-                        onPressed: () {
-                          // 分享操作
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          // 删除操作
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          // 重命名操作
-                        },
+                      SizedBox(height: 10), // 添加间隔
+                      // 第二行的图标和文字
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.star_border,
+                                    color: Colors.black),
+                                onPressed: () {
+                                  // 收藏操作
+                                },
+                              ),
+                              Text('收藏',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 12)),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.info_outline,
+                                    color: Colors.black),
+                                onPressed: () {
+                                  // 查看详细信息操作
+                                },
+                              ),
+                              Text('详情',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 12)),
+                            ],
+                          ),
+                          // 新增的 "移动" 按钮
+                          Column(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.move_to_inbox,
+                                    color: Colors.black),
+                                onPressed: () {
+                                  // 移动操作
+                                },
+                              ),
+                              Text('移动',
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 12)),
+                            ],
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -353,7 +473,7 @@ class _FilesPageState extends State<FilesPage> {
                                                         await FileApi
                                                             .createFolderApi(
                                                                 folderName,
-                                                                _currentId);
+                                                            _userData['id']);
                                                     // 关闭对话框
                                                     Get.back();
                                                   } else {
@@ -405,22 +525,22 @@ class _FilesPageState extends State<FilesPage> {
 class FolderTile extends StatelessWidget {
   final String title;
   final String date;
+  final VoidCallback? onTap; // 添加 onTap 回调
 
-  const FolderTile(this.title, this.date, {super.key});
+  const FolderTile(this.title, this.date,
+      {super.key, this.onTap}); // 通过构造函数传入 onTap
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: SvgPicture.asset(
         'assets/icons/folder_icon.svg',
-        width: 24, // 可选：设置宽度
-        height: 24, // 可选：设置高度
+        width: 24,
+        height: 24,
       ),
       title: Text(title),
       subtitle: Text(date),
-      onTap: () {
-        // 文件夹点击操作
-      },
+      onTap: onTap, // 使用传入的 onTap 回调
     );
   }
 }
