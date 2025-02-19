@@ -17,6 +17,13 @@ class _FilesPageState extends State<FilesPage> {
 
   Map<String,dynamic> _userData = {};
 
+  ValueNotifier<List<Map<String, dynamic>>> _selectedItems =
+      ValueNotifier<List<Map<String, dynamic>>>([
+        //设置更目录
+        {'id': 0, 'name': '根目录'}
+      ]);
+
+
   @override
   void initState() {
     super.initState();
@@ -46,16 +53,20 @@ class _FilesPageState extends State<FilesPage> {
     var height = size.height;
     return Scaffold(
         appBar: AppBar(
-          title: _userData['parentId'] == 0
+          //判断_selectedItems的长度，如果大于1，显示多选的标题，否则显示分类
+          title: _selectedItems.value.length ==1
               ? const Text('分类')
               : GestureDetector(
             onTap: () {
               // 这里可以执行点击后的逻辑
               // 比如返回上一层
               setState(() {
-                _userData['id'] = _userData['parentId'];
+                //设置userName数据
 
-                _fetchUserDir(_userData['parentId']);
+                //弹出最后一个元素
+                //获取最后一个数据的id
+                _selectedItems.value.removeLast();
+                _fetchUserDir(_selectedItems.value.last['id']);
               });
             },
             child: Row(
@@ -178,6 +189,11 @@ class _FilesPageState extends State<FilesPage> {
                                 // 点击文件夹时，进入文件夹
                                     if (e['type'] == 'directory') {
                                       setState(() {
+                                        _selectedItems.value.add({
+                                          'id': e['id'],
+                                          'name': e['name'],
+                                          'parentId': e['parentId']
+                                        });
                                         _userData['parentId']=e['parentId'];
                                         _userData['id'] = e['id'];
                                         _userData['name'] = e['name'];
@@ -185,7 +201,6 @@ class _FilesPageState extends State<FilesPage> {
                                       });
 
                                     }
-                                    print(e);
                                   }),
                             ),
                             GestureDetector(
@@ -473,7 +488,7 @@ class _FilesPageState extends State<FilesPage> {
                                                         await FileApi
                                                             .createFolderApi(
                                                                 folderName,
-                                                            _userData['id']);
+                                                            _selectedItems.value.last['id']);
                                                     // 关闭对话框
                                                     Get.back();
                                                   } else {

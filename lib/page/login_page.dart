@@ -41,15 +41,14 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = false;
       });
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['code'] == 1001) {
+      if (response.code == 200) {
+        final token = response.data;
+        if (response.code  == 1001) {
          //用户不存在
           _showErrorToast('用户不存在');
           return;
         }
 
-        final token = data['data'];
 
         if (token != null) {
           // 保存 token 和登录状态
