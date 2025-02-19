@@ -30,7 +30,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: null,
       body: SafeArea(child: Center(
         child: _pages.elementAt(_selectedIndex),
       )),

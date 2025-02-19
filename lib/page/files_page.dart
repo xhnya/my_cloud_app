@@ -15,14 +15,13 @@ class _FilesPageState extends State<FilesPage> {
 
   bool get isAnySelected => _userDir.any((e) => e['isSelected'] ?? false);
 
-  Map<String,dynamic> _userData = {};
+  Map<String, dynamic> _userData = {};
 
   ValueNotifier<List<Map<String, dynamic>>> _selectedItems =
       ValueNotifier<List<Map<String, dynamic>>>([
-        //设置更目录
-        {'id': 0, 'name': '根目录'}
-      ]);
-
+    //设置更目录
+    {'id': 0, 'name': '根目录'}
+  ]);
 
   @override
   void initState() {
@@ -54,28 +53,28 @@ class _FilesPageState extends State<FilesPage> {
     return Scaffold(
         appBar: AppBar(
           //判断_selectedItems的长度，如果大于1，显示多选的标题，否则显示分类
-          title: _selectedItems.value.length ==1
+          title: _selectedItems.value.length == 1
               ? const Text('分类')
               : GestureDetector(
-            onTap: () {
-              // 这里可以执行点击后的逻辑
-              // 比如返回上一层
-              setState(() {
-                //设置userName数据
+                  onTap: () {
+                    // 这里可以执行点击后的逻辑
+                    // 比如返回上一层
+                    setState(() {
+                      //设置userName数据
 
-                //弹出最后一个元素
-                //获取最后一个数据的id
-                _selectedItems.value.removeLast();
-                _fetchUserDir(_selectedItems.value.last['id']);
-              });
-            },
-            child: Row(
-              children: [
-                const Icon(Icons.arrow_back), // 显示左箭头图标
-                Text(_userData['name'] ?? '文件夹'), // 显示名称，避免为空
-              ],
-            ),
-          ),
+                      //弹出最后一个元素
+                      //获取最后一个数据的id
+                      _selectedItems.value.removeLast();
+                      _fetchUserDir(_selectedItems.value.last['id']);
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(Icons.arrow_back), // 显示左箭头图标
+                      Text(_userData['name'] ?? '文件夹'), // 显示名称，避免为空
+                    ],
+                  ),
+                ),
           actions: [
             IconButton(
               icon: SvgPicture.asset(
@@ -187,21 +186,20 @@ class _FilesPageState extends State<FilesPage> {
                               child: FolderTile(e['name'], e['updateTime'],
                                   onTap: () {
                                 // 点击文件夹时，进入文件夹
-                                    if (e['type'] == 'directory') {
-                                      setState(() {
-                                        _selectedItems.value.add({
-                                          'id': e['id'],
-                                          'name': e['name'],
-                                          'parentId': e['parentId']
-                                        });
-                                        _userData['parentId']=e['parentId'];
-                                        _userData['id'] = e['id'];
-                                        _userData['name'] = e['name'];
-                                        _fetchUserDir(e['id']);
-                                      });
-
-                                    }
-                                  }),
+                                if (e['type'] == 'directory') {
+                                  setState(() {
+                                    _selectedItems.value.add({
+                                      'id': e['id'],
+                                      'name': e['name'],
+                                      'parentId': e['parentId']
+                                    });
+                                    _userData['parentId'] = e['parentId'];
+                                    _userData['id'] = e['id'];
+                                    _userData['name'] = e['name'];
+                                    _fetchUserDir(e['id']);
+                                  });
+                                }
+                              }),
                             ),
                             GestureDetector(
                               onTap: () {
@@ -267,41 +265,102 @@ class _FilesPageState extends State<FilesPage> {
                         children: [
                           Column(
                             children: [
-                              IconButton(
-                                icon: Icon(Icons.download, color: Colors.black),
-                                onPressed: () {
-                                  // 下载操作
-                                },
-                              ),
-                              Text('下载',
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 12)),
+                              Material(
+                                  color: Colors.white,
+                                  child: Container(
+                                    height: 60,
+                                    width: 60,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
+                                    child: InkWell(
+                                        onTap: () {
+                                          // 下载操作
+                                          print("hahha");
+                                        },
+                                        splashColor: Colors.blue.withAlpha(30),
+                                        // 设置动画圆角
+
+                                        // 添加点击动画效果
+                                        highlightColor:
+                                            Colors.blue.withAlpha(25),
+                                        // 添加点击动画效果
+                                        child: Container(
+                                          height: 60,
+                                          width: 60,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(25),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.download,
+                                                  color: Colors.black),
+                                              SizedBox(height: 8), // 增加一点间距
+                                              Text('下载',
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 12)),
+                                            ],
+                                          ),
+                                        )),
+                                  ))
                             ],
                           ),
                           Column(
                             children: [
-                              IconButton(
-                                icon: Icon(Icons.share, color: Colors.black),
-                                onPressed: () {
-                                  // 分享操作
-                                },
-                              ),
-                              Text('分享',
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 12)),
+                              Material(
+                                color: Colors.white,
+                                child: InkWell(
+                                  onTap: () {
+                                    // 分享操作
+                                    print("aaa");
+                                  },
+                                  child: SizedBox(
+                                    height: 60,
+                                    width: 60,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.share, color: Colors.black),
+                                        SizedBox(height: 8), // 增加一点间距
+                                        Text('分享',
+                                            style: TextStyle(
+                                                color: Colors.black, fontSize: 12)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
                             ],
                           ),
                           Column(
                             children: [
-                              IconButton(
-                                icon: Icon(Icons.delete, color: Colors.black),
-                                onPressed: () {
-                                  // 删除操作
-                                },
-                              ),
-                              Text('删除',
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 12)),
+                              Material(
+                                color: Colors.white,
+                                child: InkWell(
+                                  onTap: () {
+                                    // 分享操作
+                                    print("aaa");
+                                  },
+                                  child: SizedBox(
+                                    height: 60,
+                                    width: 60,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.delete, color: Colors.black),
+                                        SizedBox(height: 8), // 增加一点间距
+                                        Text('删除',
+                                            style: TextStyle(
+                                                color: Colors.black, fontSize: 12)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
                             ],
                           ),
                         ],
@@ -313,45 +372,87 @@ class _FilesPageState extends State<FilesPage> {
                         children: [
                           Column(
                             children: [
-                              IconButton(
-                                icon: Icon(Icons.star_border,
-                                    color: Colors.black),
-                                onPressed: () {
-                                  // 收藏操作
-                                },
-                              ),
-                              Text('收藏',
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 12)),
+                              Material(
+                                color: Colors.white,
+                                child: InkWell(
+                                  onTap: () {
+                                    // 收藏
+                                    print("aaa");
+                                  },
+                                  child: SizedBox(
+                                    height: 60,
+                                    width: 60,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        //收藏
+                                        Icon(Icons.favorite, color: Colors.black),
+                                        SizedBox(height: 8), // 增加一点间距
+                                        Text('收藏',
+                                            style: TextStyle(
+                                                color: Colors.black, fontSize: 12)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
                             ],
                           ),
                           Column(
                             children: [
-                              IconButton(
-                                icon: Icon(Icons.info_outline,
-                                    color: Colors.black),
-                                onPressed: () {
-                                  // 查看详细信息操作
-                                },
-                              ),
-                              Text('详情',
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 12)),
+                              Material(
+                                color: Colors.white,
+                                child: InkWell(
+                                  onTap: () {
+                                    // 收藏
+                                    print("aaa");
+                                  },
+                                  child: SizedBox(
+                                    height: 60,
+                                    width: 60,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        //收藏
+                                        Icon(Icons.info_outline, color: Colors.black),
+                                        SizedBox(height: 8), // 增加一点间距
+                                        Text('详情',
+                                            style: TextStyle(
+                                                color: Colors.black, fontSize: 12)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
                             ],
                           ),
                           // 新增的 "移动" 按钮
                           Column(
                             children: [
-                              IconButton(
-                                icon: Icon(Icons.move_to_inbox,
-                                    color: Colors.black),
-                                onPressed: () {
-                                  // 移动操作
-                                },
-                              ),
-                              Text('移动',
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 12)),
+                              Material(
+                                color: Colors.white,
+                                child: InkWell(
+                                  onTap: () {
+                                    // 收藏
+                                    print("aaa");
+                                  },
+                                  child: SizedBox(
+                                    height: 60,
+                                    width: 60,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        //收藏
+                                        Icon(Icons.move_to_inbox, color: Colors.black),
+                                        SizedBox(height: 8), // 增加一点间距
+                                        Text('移动',
+                                            style: TextStyle(
+                                                color: Colors.black, fontSize: 12)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
                             ],
                           ),
                         ],
@@ -488,7 +589,10 @@ class _FilesPageState extends State<FilesPage> {
                                                         await FileApi
                                                             .createFolderApi(
                                                                 folderName,
-                                                            _selectedItems.value.last['id']);
+                                                                _selectedItems
+                                                                        .value
+                                                                        .last[
+                                                                    'id']);
                                                     // 关闭对话框
                                                     Get.back();
                                                   } else {

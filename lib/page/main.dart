@@ -18,6 +18,8 @@ class MyApp extends StatelessWidget {
       title: 'MyCloud',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        primaryColor: Colors.blue,
+
       ),
       home: CheckLoginStatus(),
     );

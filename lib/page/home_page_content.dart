@@ -5,8 +5,22 @@ class HomePageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Welcome to MyCloud'),
+    return Scaffold(
+      appBar:  AppBar(
+        title: Text('Home Page11'),
+        elevation: 0, // 确保没有阴影
+        shadowColor: Colors.transparent,
+
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: List.generate(100, (index) {
+            return ListTile(
+              title: Text('Item $index'),
+            );
+          }),
+        ),
+      ),
     );
   }
 }
