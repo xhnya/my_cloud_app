@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'dart:math';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -42,6 +46,30 @@ class _FilesPageState extends State<FilesPage> {
       });
     } catch (e) {
       //提示，获取目录失败
+    }
+  }
+
+  String? _fileContent;
+
+  // 选择文件并读取内容
+  Future<void> pickFiles() async {
+    // 使用 FilePicker 选择文件，允许多选
+    FilePickerResult? result = await FilePicker.platform.pickFiles(allowMultiple: true);
+
+    if (result != null) {
+      // 获取选中的文件路径列表
+      List<String> filePaths = result.paths.where((path) => path != null).cast<String>().toList();
+
+      // 读取每个文件的内容
+      List<File> contents = [];
+      for (String filePath in filePaths) {
+        File file = File(filePath);
+        contents.add(file);
+      }
+      Get.snackbar('文件选择成功','文件数量：${contents.length}');
+
+    } else {
+      Get.snackbar('警告','取消选择');
     }
   }
 
@@ -519,7 +547,7 @@ class _FilesPageState extends State<FilesPage> {
                                   GestureDetector(
                                     onTap: () {
                                       // 实现选择文件功能
-                                      print("选择文件");
+                                      pickFiles();
                                     },
                                     child: Column(
                                       children: [
